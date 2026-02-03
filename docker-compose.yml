@@ -1,0 +1,45 @@
+version: '3.9'
+
+services:
+  # ===============================
+  # Base de datos Postgres
+  # ===============================
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: microservicios_test
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # ===============================
+  # Microservicio Productos
+  # ===============================
+  micro_productos:
+    build: ./micro_productos
+    container_name: micro_productos
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+
+  # ===============================
+  # Microservicio Inventario
+  # ===============================
+  micro_inventario:
+    build: ./micro_inventario
+    container_name: micro_inventario
+    ports:
+      - "8082:8082"
+    depends_on:
+      - postgres
+
+# ===============================
+# Volúmenes persistentes
+# ===============================
+volumes:
+  postgres_data:
