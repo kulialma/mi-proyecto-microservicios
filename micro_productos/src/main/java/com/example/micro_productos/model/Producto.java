@@ -1,6 +1,9 @@
 package com.example.micro_productos.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 @Entity
 public class Producto {
@@ -11,9 +14,9 @@ public class Producto {
 
     private String nombre;
     private Double precio;
-    private String descripcion; // opcional
+    private String descripcion;
 
-    // Getters y setters
+    // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -26,5 +29,6 @@ public class Producto {
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
 }
+
 
 

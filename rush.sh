@@ -30,6 +30,7 @@ nohup java -jar target/micro_inventario-0.0.1-SNAPSHOT.jar > ../micro_inventario
 cd ..
 
 echo "✅ Rush completado:"
-echo "   - micro_productos corriendo en http://localhost:8082"
-echo "   - micro_inventario corriendo en http://localhost:8081"
+echo "   - micro_productos corriendo en http://localhost:8082/productos/public"
+echo "   - micro_inventario corriendo en http://localhost:8081/inventario"
 echo "   - PostgreSQL levantado en Docker"
+echo "   - Logs en micro_productos.log y micro_inventario.log"

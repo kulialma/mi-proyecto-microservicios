@@ -1,26 +1,38 @@
 package com.example.micro_inventario.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 @Entity
 public class Inventario {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long productoId;
+    private Integer cantidad;
 
-    private Long productoId;   // referencia al producto
-    private Integer cantidad;  // cantidad disponible
+    public Inventario() {
+    }
 
-    // Getters y setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Inventario(Long productoId, Integer cantidad) {
+        this.productoId = productoId;
+        this.cantidad = cantidad;
+    }
 
     public Long getProductoId() { return productoId; }
     public void setProductoId(Long productoId) { this.productoId = productoId; }
 
     public Integer getCantidad() { return cantidad; }
     public void setCantidad(Integer cantidad) { this.cantidad = cantidad; }
+
+    @Override
+    public String toString() {
+        return "Inventario{" +
+                "productoId=" + productoId +
+                ", cantidad=" + cantidad +
+                '}';
+    }
 }
+
+
 
 
