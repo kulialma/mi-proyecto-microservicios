@@ -13,6 +13,13 @@ import java.util.*;
 @RestController
 @RequestMapping("/productos")
 public class ProductosController {
+    
+
+    @GetMapping
+    public String listaproductos() {
+        return "aqui iria la lista de productos";
+    }
+
 
     @Autowired
     private ProductoRepository productoRepository;

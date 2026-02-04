@@ -16,6 +16,13 @@ import java.util.*;
 @RequestMapping("/inventario")
 public class InventarioController {
 
+
+@GetMapping
+    public String listainventario() {
+        return "aqui iria la lista de inventario";
+    }
+
+
     @Autowired
     private InventarioRepository inventarioRepository;
 
