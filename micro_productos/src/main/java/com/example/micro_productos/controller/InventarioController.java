@@ -20,6 +20,9 @@ public class InventarioController {
         this.inventarioService = inventarioService;
     }
 
+    // ===============================
+    // Crear inventario
+    // ===============================
     @PostMapping
     public ResponseEntity<?> crearInventario(@RequestBody Inventario inventario) {
         Inventario nuevo = inventarioService.crearInventario(inventario);
@@ -35,6 +38,51 @@ public class InventarioController {
         );
     }
 
+    // ===============================
+    // Listar inventario completo
+    // ===============================
+    @GetMapping
+    public ResponseEntity<?> listarInventario() {
+        List<Inventario> inventarios = inventarioService.listarInventario();
+        return ResponseEntity.ok(
+            Map.of("data", inventarios.stream().map(inv -> Map.of(
+                "type", "inventario",
+                "id", inv.getId(),
+                "attributes", Map.of(
+                    "productoId", inv.getProductoId(),
+                    "cantidad", inv.getCantidad()
+                )
+            )).toList())
+        );
+    }
+
+    // ===============================
+    // Consultar inventario por productoId
+    // ===============================
+    @GetMapping("/{productoId}")
+    public ResponseEntity<?> obtenerInventarioPorProducto(@PathVariable Long productoId) {
+        try {
+            Inventario inv = inventarioService.obtenerInventarioPorProducto(productoId);
+            return ResponseEntity.ok(
+                Map.of("data", Map.of(
+                    "type", "inventario",
+                    "id", inv.getId(),
+                    "attributes", Map.of(
+                        "productoId", inv.getProductoId(),
+                        "cantidad", inv.getCantidad()
+                    )
+                ))
+            );
+        } catch (InventarioNoEncontradoException e) {
+            return ResponseEntity.status(404).body(
+                Map.of("errors", List.of(Map.of("detail", "Producto no existe en inventario")))
+            );
+        }
+    }
+
+    // ===============================
+    // Realizar compra
+    // ===============================
     @PostMapping("/compras")
     public ResponseEntity<?> realizarCompra(@RequestBody Map<String, Object> body) {
         Long productoId = Long.valueOf(body.get("productoId").toString());
@@ -66,5 +114,6 @@ public class InventarioController {
         }
     }
 }
+
 
 

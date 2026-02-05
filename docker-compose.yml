@@ -22,10 +22,15 @@ services:
   micro_productos:
     build: ./micro_productos
     container_name: micro_productos
-    ports:
-      - "8081:8081"
     depends_on:
       - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/microservicios_test
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8081:8081"
 
   # ===============================
   # Microservicio Inventario
@@ -33,13 +38,19 @@ services:
   micro_inventario:
     build: ./micro_inventario
     container_name: micro_inventario
-    ports:
-      - "8082:8082"
     depends_on:
       - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/microservicios_test
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8082:8082"
 
 # ===============================
 # Volúmenes persistentes
 # ===============================
 volumes:
   postgres_data:
+

@@ -6,6 +6,8 @@ import com.example.micro_productos.exception.InventarioNoEncontradoException;
 import com.example.micro_productos.exception.StockInsuficienteException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class InventarioService {
 
@@ -17,6 +19,15 @@ public class InventarioService {
 
     public Inventario crearInventario(Inventario inventario) {
         return inventarioRepository.save(inventario);
+    }
+
+    public List<Inventario> listarInventario() {
+        return inventarioRepository.findAll();
+    }
+
+    public Inventario obtenerInventarioPorProducto(Long productoId) {
+        return inventarioRepository.findByProductoId(productoId)
+                .orElseThrow(InventarioNoEncontradoException::new);
     }
 
     public Inventario realizarCompra(Long productoId, int cantidad) {
@@ -31,5 +42,6 @@ public class InventarioService {
         return inventarioRepository.save(inv);
     }
 }
+
 
 
