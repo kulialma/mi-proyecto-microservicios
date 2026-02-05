@@ -41,6 +41,22 @@ public class InventarioController {
     }
 
     // ===============================
+    // Listar todos los inventarios
+    // ===============================
+    @GetMapping
+    public ResponseEntity<Map<String, Object>> listarInventario() {
+        List<Inventario> inventarios = inventarioRepository.findAll();
+
+        List<Map<String, Object>> data = inventarios.stream().map(inv -> Map.of(
+            "type", "inventario",
+            "id", inv.getProductoId(),
+            "attributes", Map.of("cantidad", inv.getCantidad())
+        )).toList();
+
+        return ResponseEntity.ok(Map.of("data", data));
+    }
+
+    // ===============================
     // Consultar inventario por productoId
     // ===============================
     @GetMapping("/{productoId}")
@@ -132,3 +148,4 @@ public class InventarioController {
         return Map.of("meta", Map.of("mensaje", "Microservicio Inventario activo"));
     }
 }
+
