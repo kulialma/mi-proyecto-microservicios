@@ -5,6 +5,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 public class StockInsuficienteException extends ResponseStatusException {
     public StockInsuficienteException() {
-        super(HttpStatus.BAD_REQUEST, "Stock insuficiente");
+        super(HttpStatus.BAD_REQUEST, "Inventario insuficiente");
     }
 }
+

@@ -1,5 +1,8 @@
 package com.example.micro_productos;
 
+import com.example.micro_productos.model.Inventario;
+import com.example.micro_productos.repository.InventarioRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,65 +20,78 @@ class InventarioControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Test
-    void crearInventario_deberiaRetornar201() throws Exception {
-        String json = """
-            {
-              "productoId": 1,
-              "cantidad": 10
-            }
-        """;
+    @Autowired
+    private InventarioRepository inventarioRepository;
 
-        mockMvc.perform(post("/inventario")
-                .header("X-API-KEY", "MI_API_KEY_SECRETA")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.data.attributes.cantidad").value(10));
+    @BeforeEach
+    void limpiarInventario() {
+        inventarioRepository.deleteAll();
     }
 
     @Test
-    void realizarCompra_conStockInsuficiente_deberiaRetornarError() throws Exception {
-        // Crear inventario con 1 unidad
+    void crearInventario_deberiaRetornar201() throws Exception {
         String inventarioJson = """
-            {
-              "productoId": 1,
-              "cantidad": 1
-            }
+            { "productoId": 1, "cantidad": 5 }
         """;
+
         mockMvc.perform(post("/inventario")
-                .header("X-API-KEY", "MI_API_KEY_SECRETA")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(inventarioJson))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.attributes.productoId").value(1))
+                .andExpect(jsonPath("$.data.attributes.cantidad").value(5));
+    }
 
-        // Intentar comprar más de lo disponible
+    @Test
+    void realizarCompraExitosa_deberiaRetornar201() throws Exception {
+        // Crear inventario con 10 unidades
+        Inventario inv = new Inventario();
+        inv.setProductoId(1L);
+        inv.setCantidad(10);
+        inventarioRepository.save(inv);
+
         String compraJson = """
-            {
-              "productoId": 1,
-              "cantidad": 5
-            }
+            { "productoId": 1, "cantidad": 3 }
         """;
-        mockMvc.perform(post("/inventario/compra")
-                .header("X-API-KEY", "MI_API_KEY_SECRETA")
+
+        mockMvc.perform(post("/inventario/compras")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(compraJson))
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.attributes.cantidadRestante").value(7));
+    }
+
+    @Test
+    void realizarCompra_conStockInsuficiente_deberiaRetornar400() throws Exception {
+        // Crear inventario con 2 unidades
+        Inventario inv = new Inventario();
+        inv.setProductoId(1L);
+        inv.setCantidad(2);
+        inventarioRepository.save(inv);
+
+        String compraJson = """
+            { "productoId": 1, "cantidad": 5 }
+        """;
+
+        mockMvc.perform(post("/inventario/compras")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(compraJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].detail").value("Inventario insuficiente"));
     }
 
     @Test
     void realizarCompra_conProductoInexistente_deberiaRetornar404() throws Exception {
         String compraJson = """
-            {
-              "productoId": 999,
-              "cantidad": 1
-            }
+            { "productoId": 999, "cantidad": 1 }
         """;
-        mockMvc.perform(post("/inventario/compra")
-                .header("X-API-KEY", "MI_API_KEY_SECRETA")
+
+        mockMvc.perform(post("/inventario/compras")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(compraJson))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errors[0].detail").value("Producto no existe en inventario"));
     }
 }
+
 

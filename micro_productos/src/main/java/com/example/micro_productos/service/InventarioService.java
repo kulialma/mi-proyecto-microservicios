@@ -20,7 +20,7 @@ public class InventarioService {
     }
 
     public Inventario realizarCompra(Long productoId, int cantidad) {
-        Inventario inv = inventarioRepository.findById(productoId)
+        Inventario inv = inventarioRepository.findByProductoId(productoId)
                 .orElseThrow(InventarioNoEncontradoException::new);
 
         if (inv.getCantidad() < cantidad) {
@@ -31,4 +31,5 @@ public class InventarioService {
         return inventarioRepository.save(inv);
     }
 }
+
 

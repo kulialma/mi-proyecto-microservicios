@@ -5,7 +5,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 public class InventarioNoEncontradoException extends ResponseStatusException {
     public InventarioNoEncontradoException() {
-        super(HttpStatus.NOT_FOUND, "Inventario no encontrado");
+        super(HttpStatus.NOT_FOUND, "Producto no existe en inventario");
     }
 }
 
