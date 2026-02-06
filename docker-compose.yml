@@ -30,7 +30,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: postgres123
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
     ports:
-      - "8081:8081"
+      - "8082:8082"
 
   # ===============================
   # Microservicio Inventario
@@ -46,7 +46,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: postgres123
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
     ports:
-      - "8082:8082"
+      - "8081:8081"
 
 # ===============================
 # Volúmenes persistentes
