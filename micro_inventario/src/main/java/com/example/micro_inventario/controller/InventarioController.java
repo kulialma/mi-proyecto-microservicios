@@ -18,47 +18,44 @@ public class InventarioController {
         this.inventarioRepository = inventarioRepository;
     }
 
-    // ===============================
     // Crear inventario inicial
-    // ===============================
     @PostMapping
     public ResponseEntity<Map<String, Object>> crearInventario(@RequestBody Inventario inventario) {
-        if (inventarioRepository.existsById(inventario.getProductoId())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Map.of("errors", List.of(Map.of("detail", "Inventario ya existe"))));
-        }
         Inventario nuevo = inventarioRepository.save(inventario);
 
         Map<String, Object> response = Map.of(
             "data", Map.of(
                 "type", "inventario",
                 "id", nuevo.getProductoId(),
-                "attributes", Map.of("cantidad", nuevo.getCantidad())
+                "attributes", Map.of(
+                    "cantidad", nuevo.getCantidad()
+                )
             )
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // ===============================
-    // Listar todos los inventarios
-    // ===============================
+    // Listar inventarios
     @GetMapping
     public ResponseEntity<Map<String, Object>> listarInventario() {
         List<Inventario> inventarios = inventarioRepository.findAll();
 
-        List<Map<String, Object>> data = inventarios.stream().map(inv -> Map.of(
-            "type", "inventario",
-            "id", inv.getProductoId(),
-            "attributes", Map.of("cantidad", inv.getCantidad())
-        )).toList();
+        List<Map<String, Object>> data = new ArrayList<>();
+        for (Inventario inv : inventarios) {
+            data.add(Map.of(
+                "type", "inventario",
+                "id", inv.getProductoId(),
+                "attributes", Map.of(
+                    "cantidad", inv.getCantidad()
+                )
+            ));
+        }
 
         return ResponseEntity.ok(Map.of("data", data));
     }
 
-    // ===============================
     // Consultar inventario por productoId
-    // ===============================
     @GetMapping("/{productoId}")
     public ResponseEntity<Map<String, Object>> consultarInventario(@PathVariable Long productoId) {
         Optional<Inventario> opt = inventarioRepository.findByProductoId(productoId);
@@ -73,36 +70,56 @@ public class InventarioController {
             "data", Map.of(
                 "type", "inventario",
                 "id", inv.getProductoId(),
-                "attributes", Map.of("cantidad", inv.getCantidad())
+                "attributes", Map.of(
+                    "cantidad", inv.getCantidad()
+                )
             )
         );
 
         return ResponseEntity.ok(response);
     }
 
-    // ===============================
     // Actualizar inventario
-    // ===============================
     @PutMapping("/{productoId}")
     public ResponseEntity<Map<String, Object>> actualizarInventario(@PathVariable Long productoId,
                                                                     @RequestBody Inventario inventario) {
-        inventario.setProductoId(productoId);
-        Inventario actualizado = inventarioRepository.save(inventario);
+        Optional<Inventario> opt = inventarioRepository.findByProductoId(productoId);
+
+        if (opt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("errors", List.of(Map.of("detail", "Inventario no encontrado"))));
+        }
+
+        Inventario inv = opt.get();
+        inv.setCantidad(inventario.getCantidad());
+        Inventario actualizado = inventarioRepository.save(inv);
 
         Map<String, Object> response = Map.of(
             "data", Map.of(
                 "type", "inventario",
                 "id", actualizado.getProductoId(),
-                "attributes", Map.of("cantidad", actualizado.getCantidad())
+                "attributes", Map.of(
+                    "cantidad", actualizado.getCantidad()
+                )
             )
         );
 
         return ResponseEntity.ok(response);
     }
 
-    // ===============================
+    // Eliminar inventario
+    @DeleteMapping("/{productoId}")
+    public ResponseEntity<Map<String, Object>> eliminarInventario(@PathVariable Long productoId) {
+        if (!inventarioRepository.existsById(productoId)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("errors", List.of(Map.of("detail", "Inventario no encontrado"))));
+        }
+
+        inventarioRepository.deleteById(productoId);
+        return ResponseEntity.ok(Map.of("meta", Map.of("mensaje", "Inventario eliminado con éxito")));
+    }
+
     // Endpoint de compra
-    // ===============================
     @PostMapping("/compras")
     public ResponseEntity<Map<String, Object>> realizarCompra(@RequestBody Map<String, Object> request) {
         Long productoId = Long.valueOf(request.get("productoId").toString());
@@ -140,12 +157,13 @@ public class InventarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // ===============================
     // Endpoint de salud
-    // ===============================
     @GetMapping("/ping")
     public Map<String, Object> ping() {
         return Map.of("meta", Map.of("mensaje", "Microservicio Inventario activo"));
     }
 }
+
+
+
 

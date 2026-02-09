@@ -43,15 +43,18 @@ public class ProductoController {
     public ResponseEntity<Map<String, Object>> listarProductos() {
         List<Producto> productos = productoRepository.findAll();
 
-        List<Map<String, Object>> data = productos.stream().map(p -> Map.of(
-            "type", "producto",
-            "id", p.getId(),
-            "attributes", Map.of(
-                "nombre", p.getNombre(),
-                "descripcion", p.getDescripcion(),
-                "precio", p.getPrecio()
-            )
-        )).toList();
+        List<Map<String, Object>> data = new ArrayList<>();
+        for (Producto p : productos) {
+            data.add(Map.of(
+                "type", "producto",
+                "id", p.getId(),
+                "attributes", Map.of(
+                    "nombre", p.getNombre(),
+                    "descripcion", p.getDescripcion(),
+                    "precio", p.getPrecio()
+                )
+            ));
+        }
 
         return ResponseEntity.ok(Map.of("data", data));
     }
@@ -131,6 +134,7 @@ public class ProductoController {
         return Map.of("meta", Map.of("mensaje", "Microservicio Productos activo"));
     }
 }
+
 
 
 
